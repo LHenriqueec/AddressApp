@@ -21,6 +21,8 @@ public class Person {
 	private StringProperty city;
 	private IntegerProperty postalCode;
 	private ObjectProperty<LocalDate> birthday;
+	
+	
 
 	/**
 	 * Construtor padrão.
