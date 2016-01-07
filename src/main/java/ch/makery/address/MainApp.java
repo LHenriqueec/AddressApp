@@ -3,6 +3,7 @@ package ch.makery.address;
 import java.io.IOException;
 
 import ch.makery.address.model.Person;
+import ch.makery.address.view.PersonEditDialogController;
 import ch.makery.address.view.PersonOverviewController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -11,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -88,6 +90,44 @@ public class MainApp extends Application {
 			controller.setMainApp(this);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Abre uma janela para editar detalhes para a pessoa especificada. Se o usuário clicar OK,
+	 * as mudanças são salvas no objeto pessoa fornecido e retorna true.
+	 * 
+	 * @param person O objeto pessoa a ser editado.
+	 * @return true se o usuário clicar em OK, caso contrário false.
+	 */
+	public boolean showPersonEditDialog(Person person) {
+		try {
+			//Carrega o arquivo FXML e cria um novo stage para a janela popup.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/PersonEditDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+			
+			//Cria o palco dialogStage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Edit Person");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			
+			//Define a pessoa no Controller.
+			PersonEditDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setPerson(person);
+			
+			//Mostra a janela e espera até o usuário fechar.
+			dialogStage.showAndWait();
+			
+			return controller.isOkCliked();
+			
+		}catch(IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 	

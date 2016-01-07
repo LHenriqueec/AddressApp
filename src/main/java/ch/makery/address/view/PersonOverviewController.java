@@ -1,5 +1,7 @@
 package ch.makery.address.view;
 
+
+
 import org.controlsfx.dialog.Dialogs;
 
 import ch.makery.address.MainApp;
@@ -9,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 public class PersonOverviewController {
 	
@@ -34,6 +37,7 @@ public class PersonOverviewController {
 	private Label birthdayLabel;
 	
 	private MainApp mainApp;
+	private Stage dialogStage;
 	
 	/**
 	 * Construtor.
@@ -92,17 +96,69 @@ public class PersonOverviewController {
 	 */
 	@FXML
 	private void handleDeletePerson() {
-		int selectIndex = personTable.getSelectionModel().getSelectedIndex();
+	    int selectedIndex = personTable.getSelectionModel().getSelectedIndex();
+	    if (selectedIndex >= 0) {
+	        personTable.getItems().remove(selectedIndex);
+	    } else {
+	        // Nada selecionado.
+	        Dialogs.create()
+	        	.owner(dialogStage)
+	            .title("Nenhuma seleção")
+	            .masthead("Nenhuma Pessoa Selecionada")
+	            .message("Por favor, selecione uma pessoa na tabela.")
+	            .showWarning();
+	    }
+	}
+	
+	/**
+	 * Chamado quando o usuário clica no botão novo. Abre uma janela para editar
+	 * detalhs da nova pessoa.
+	 */
+	@FXML
+	private void handleNewPerson() {
+		Person tempPerson = new Person();
+		boolean okCliked = mainApp.showPersonEditDialog(tempPerson);
 		
-		if(selectIndex >= 0) {
-			personTable.getItems().remove(selectIndex);
-		} else {
-			//Nada selecionado.
-			Dialogs.create()
-				.title("Nenhuma seleção")
-				.masthead("Nenhuma Pessoa Selecionada")
-				.message("Por favor, selecione uma pessoa na tabela")
-				.showWarning();
+		if(okCliked) {
+			mainApp.getPersonData().add(tempPerson);
 		}
 	}
+	
+	/**
+	 * Chamado quando o usuário clica no botão edit. Abre a janela para editar
+	 * detalhes da pessoa selecionada.
+	 */
+	@FXML
+	private void handleEditPerson() {
+		Person selectPerson = personTable.getSelectionModel().getSelectedItem();
+		
+		if(selectPerson != null) {
+			boolean okCliked = mainApp.showPersonEditDialog(selectPerson);
+			
+			if(okCliked) {
+				showPersonDatail(selectPerson);
+			}
+		} else {
+			//Nada selecionado
+			Dialogs.create()
+			.title("Nenhuma seleção")
+			.masthead("Nenhuma Pessoa Selecionada")
+			.message("Por favor, selecione uma pessoa na tabela")
+			.showWarning();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
